@@ -141,7 +141,7 @@ nav a[aria-current]:after {
 }
 .hero {
   /* background: var(--dark); */
-  background: #5c9688;
+  background:rgba(16, 129, 76, 0.2);
   color: #f3f6ef;
   min-height: 690px;
   position: relative;
