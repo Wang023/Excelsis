@@ -1,56 +1,21 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, CheckCircle2 } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 export default function ContactForm() {
-  const [state, setState] = useState<"idle" | "sending" | "success" | "error">(
-    "idle",
-  );
-  const [message, setMessage] = useState("");
-  return state === "success" ? (
-    <div className="form-panel success" role="status">
-      <CheckCircle2 size={44} />
-      <h2>Your enquiry is saved.</h2>
-      <p>
-        Thank you for sharing your goals. Your request has been recorded in this
-        website’s enquiry inbox.
-      </p>
-      <p className="form-note">
-        Email delivery and scheduling aren’t connected yet. No appointment has
-        been booked.
-      </p>
-      <button className="button" onClick={() => setState("idle")}>
-        Send another enquiry <ArrowUpRight size={16} />
-      </button>
-    </div>
-  ) : (
-    <form
-      className="form-panel"
-      onSubmit={async (e) => {
-        e.preventDefault();
-        setState("sending");
-        const form = e.currentTarget;
-        const data = Object.fromEntries(new FormData(form));
-        try {
-          const res = await fetch("/api/enquiries", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-          });
-          const result = await res.json();
-          if (!res.ok) throw new Error(result.error || "Please try again.");
-          setState("success");
-          form.reset();
-        } catch (err) {
-          setMessage(
-            err instanceof Error
-              ? err.message
-              : "Unable to save your enquiry. Please try again.",
-          );
-          setState("error");
-        }
-      }}
-    >
+  const [draft, setDraft] = useState("");
+  const email = process.env.NEXT_PUBLIC_CONTACT_EMAIL || "ganasehaki@gmail.com";
+  return (
+    <form className="form-panel" onSubmit={(event) => {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      const body = `Name: ${data.get("name")}\nEmail: ${data.get("email")}\nPractice: ${data.get("practice")}\nWebsite: ${data.get("website")}\nInterest: ${data.get("interest")}\n\n${data.get("goals")}`;
+      if (email) {
+        window.location.href = `mailto:${email}?subject=${encodeURIComponent("Dental practice growth audit enquiry")}&body=${encodeURIComponent(body)}`;
+      } else {
+        setDraft(body);
+      }
+    }}>
       <h2>Let’s find your opportunities.</h2>
       <p className="form-note">
         A free audit. A useful conversation. No obligation.
@@ -119,33 +84,15 @@ export default function ContactForm() {
           placeholder="What would a better next chapter look like?"
         />
       </label>
-      <label className="consent">
-        <input type="checkbox" required name="consent" />
-        <span>
-          I agree to the <Link href="/privacy">privacy policy</Link> and consent
-          to being contacted about this enquiry.
-        </span>
-      </label>
-      <input
-        className="honey"
-        name="companyFax"
-        tabIndex={-1}
-        autoComplete="off"
-        aria-hidden="true"
-      />
-      <div role="status">
-        {state === "error" && <p className="error">{message}</p>}
-      </div>
-      <button className="button" disabled={state === "sending"}>
-        {state === "sending"
-          ? "Saving your enquiry…"
-          : "Request my free growth audit"}
+      <p className="form-note">Please don’t include patient or medical information. <Link href="/privacy">Read our privacy policy.</Link></p>
+      <button className="button" type="submit">
+        {email ? "Open enquiry in email" : "Prepare my enquiry"}
         <ArrowUpRight size={18} />
       </button>
       <p className="form-note bottom-note">
-        This site saves enquiries locally. Email and calendar integrations are
-        pending.
+        {email ? "Opens your email app. Review and send your message there." : "Prepare a message to share with us. Our contact address will be available here soon."}
       </p>
+      {draft && <div role="status"><h3 style={{marginTop:24}}>Your enquiry draft</h3><p className="form-note">Nothing has been sent. Copy this draft for your records.</p><textarea aria-label="Your enquiry draft" readOnly rows={10} value={draft}/><button type="button" className="button" onClick={() => {const url=URL.createObjectURL(new Blob([draft],{type:"text/plain"}));const a=document.createElement("a");a.href=url;a.download="excelsis-enquiry.txt";a.click();URL.revokeObjectURL(url);}}>Download my draft</button></div>}
     </form>
   );
 }

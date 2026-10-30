@@ -1,38 +1,31 @@
-# Excelsis — Dental growth agency
+# Excelsis — Dental AI marketing agency
 
-A responsive Next.js 16 / React 19 / TypeScript website for an AI marketing agency specialising in dentistry. Uses the reference project's App Router, reusable section, and shared UI structure, with original agency-focused content and styling.
+A responsive, completely static Next.js website using the reference project's App Router, shared UI, and reusable sections. No backend or database is required.
 
-## Development
+## Develop
 
-Use the existing `/workspace/Excelsis` checkout; this cloud task is already isolated and does not need a worktree.
+Use the existing checkout; no extra worktree is needed.
 
 ```sh
 npm ci
-npm run dev -- --hostname 0.0.0.0
+npm run dev
 ```
 
-## Production and checks
+## Build for GitHub Pages
 
 ```sh
 npm run lint
-npm run build
-npm start -- --hostname 0.0.0.0
+NEXT_PUBLIC_BASE_PATH=/Excelsis npm run build
 ```
 
-Includes home, services, approach, insights, three full articles, contact, privacy, and a custom 404. The mobile navigation, service links, and audit calls to action work without external services.
+The generated `out/` directory contains the entire website. All pages and articles are exported, with repository-prefixed links and assets.
 
-## Enquiry storage
+## Publish
 
-`POST /api/enquiries` validates submissions and appends JSON records to `.data/enquiries.jsonl` (ignored by Git). Optionally set `ENQUIRY_DATA_DIR` to a private persistent directory outside the public web root. No submissions are exposed through a public GET endpoint. Server filesystem access is required to read the inbox. Back up and restrict access to this directory.
+In GitHub repository Settings → Pages, select **GitHub Actions** as the source. The included workflow builds and deploys on pushes to `main`. The expected address is https://wang023.github.io/Excelsis/ after a successful deployment.
 
-For a functional local test, start with `ENQUIRY_DATA_DIR=/tmp/excelsis-test-enquiries npm start`, submit the contact form, and verify a record appears in that directory. Use synthetic data only.
+## Contact without a backend
 
-## Before public launch
+The form opens the visitor’s email app with a prepared message to `ganasehaki@gmail.com`; visitors must send it themselves. No messages are saved or sent by this site. Set the optional public GitHub Actions repository variable `NEXT_PUBLIC_CONTACT_EMAIL` to override the address. This is public contact information, not a secret.
 
-- Connect the enquiry endpoint to the agency's actual CRM/email workflow. The UI currently explicitly states that submissions are saved locally and no appointment is booked.
-- Configure persistent storage; local files are unsuitable for ephemeral/serverless deployments.
-- Add verified legal identity, privacy contact, and retention period to the privacy policy.
-- Add production anti-abuse/rate limiting at the hosting layer and confirm the host's backup and access controls.
-- Confirm brand details and configure the deployment domain. No fabricated clients, performance statistics, or testimonials are included.
-
-Typography uses Google Fonts with local system fallbacks. There are no analytics or advertising cookies configured.
+For another hosting path, adjust `NEXT_PUBLIC_BASE_PATH` (empty for a root-domain site). No live server process is needed to host the export. Typography uses Google Fonts with system fallbacks.
