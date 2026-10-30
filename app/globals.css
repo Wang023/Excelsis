@@ -7,6 +7,14 @@
   --muted: #b8a17d;
   --line: #d8d3c8;
 }
+/* 
+  --ink: #183b30;
+  --dark: #102e25;
+  --mint: #c3edcd;
+  --paper: #f7f8f2;
+  --muted: #6c776e;
+  --line: #dfe4da;
+*/
 * {
   box-sizing: border-box;
 }
